@@ -1,0 +1,79 @@
+@name PowerBuxoK's Image Writer
+@inputs 
+@outputs ResX ResY XS Y
+@persist ColSToObr:string [URL HTTP]:string E Scr:wirelink ResX ResY Dodounawteway Speed
+@trigger 
+
+interval(20)
+runOnHTTP(1)
+if(first()){
+    runOnChat(1)
+    noDuplications()
+    ResX=512
+    ResY=512
+    Speed=128
+    URL=""##URL to PHP
+    Scr=entity():isWeldedTo():wirelink()
+    
+##Funcs##
+function wirelink:initScr (ResX,ResY){
+This[1048574]=0
+This[1048569]=3
+This[1048575]=1
+This[1048573]=ResX
+This[1048572]=ResY
+}
+function wirelink:drPx(ResX ,X, Y, Color:vector) {
+This[X+Y*ResX]=rgb2digi(Color, 3)
+}
+#########
+    }
+if(chatClk(owner())&&owner():lastSaid():left(1)=="^"){
+    hideChat(1)
+    HTTP=owner():lastSaid():right(owner():lastSaid():length()-1)
+    }
+if(chatClk(owner())&&owner():lastSaid():left(1)=="&"){
+    hideChat(1)
+    ResX=owner():lastSaid():replace("&",""):explode(" ")[1,string]:toNumber()
+    ResY=owner():lastSaid():replace("&",""):explode(" ")[2,string]:toNumber()
+    Scr:initScr(ResX,ResY)
+    }
+if(HTTP!=""&&(owner():aimEntity():type()=="gmod_wire_digitalscreen")&&chatClk(owner())&&owner():lastSaid():left(1)=="^"){
+if(owner():aimEntity():type()=="gmod_wire_digitalscreen"){
+Scr=owner():aimEntity():wirelink()
+}
+httpRequest(URL+"?img="+HTTP+"&res="+ResX+"x"+ResY)
+print("Requesting to "+URL+"?img="+HTTP+"&res="+ResX+"x"+ResY)
+E=0
+XS=0
+Y=0
+Dodounawteway=0
+}elseif(changed(HTTP)&&HTTP!=""&&chatClk(owner())){
+print("No DIGI screen")
+}
+if(httpClk()){
+    ColSToObr = httpData():right(httpData():length()-httpData():left(16):explode(";")[1,string]:length()-1)
+    if(httpData():left(32):lower():find("error")|httpData():left(32):lower():find("warning")){Err=httpData():replace("<b>",""):replace("</b>",""):replace("<br />",""):explode("\n") foreach(I,Str:string=Err){print(Str)}}else{
+    print("PowerBuxoK's Image Writer - writing...; image data: "+"ResX = "+ResX+" RexY = "+ResY)
+    setName("PowerBuxoK's Image Writer - writing...; image data: "+"ResX = "+ResX+" RexY = "+ResY)
+    Scr:initScr(max(ResX,ResY),max(ResX,ResY))
+    print("Filling "+ResX*ResY+" pixels")
+    Dodounawteway=1
+}}
+while(perf()&&Dodounawteway){
+XS++
+E=E+9
+Scr:drPx(ResX,XS,Y, vec(ColSToObr:sub(E+1,E+3):toNumber(),ColSToObr:sub(E+3,E+6):toNumber(),ColSToObr:sub(E+6,E+9):toNumber()))
+if(XS>=ResX){
+    Y++
+    XS=0
+    }
+if(Y>=ResY){
+    XS=0
+    Y=0
+    Dodounawteway=0
+setName("PowerBuxoK's Image Writer - writed!; image data: "+"ResX = "+ResX+" RexY = "+ResY)
+}
+}
+#[Copyright (c) 2021 PowerBuxoK]#
+
