@@ -6,4 +6,4 @@ Upload the .php file to host
 Place Digital screen
 Place E2 chip
 &[ResX ResY] - change resolution
-^[Image URL] while looking Digital screen - draw lmage
+^[Image URL] while looking ontoDigital screen - draw lmage
